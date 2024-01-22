@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# Compiled output
+*.su
+*.size
+*.map
+*.list
+*.bin
+
+# Apple
+.DS_Store

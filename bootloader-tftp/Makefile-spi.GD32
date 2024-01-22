@@ -1,0 +1,15 @@
+BOARD=BOARD_GD32F470Z_EVAL
+
+DEFINES =CONFIG_STORE_USE_SPI
+
+DEFINES+=DEBUG_STACK
+
+DEFINES+=NDEBUG
+
+SRCDIR=
+LIBS=
+
+include Rules.mk
+include ../firmware-template-gd32/Rules.mk
+
+prerequisites:

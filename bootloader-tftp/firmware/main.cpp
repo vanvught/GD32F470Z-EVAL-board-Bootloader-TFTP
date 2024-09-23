@@ -42,30 +42,33 @@
 
 #include "gd32.h"
 
-void Hardware::RebootHandler() {
-
-}
+void Hardware::RebootHandler() {}
 
 int main(void) {
 	rcu_periph_clock_enable(KEY_BOOTLOADER_TFTP_RCU_GPIOx);
-#if !defined (GD32F4XX)
-	rcu_periph_clock_enable(RCU_AF);
-	rcu_periph_clock_enable(KEY_BOOTLOADER_TFTP_RCU_GPIOx);
-	gpio_init(KEY_BOOTLOADER_TFTP_GPIOx, GPIO_MODE_IPU, GPIO_OSPEED_50MHZ, KEY_BOOTLOADER_TFTP_GPIO_PINx);
-#else
+#if defined (GD32F4XX) || defined (GD32H7XX)
 	rcu_periph_clock_enable(RCU_PMU);
+# if defined (GD32F4XX)
 	pmu_backup_ldo_config(PMU_BLDOON_ON);
+# endif
 	rcu_periph_clock_enable(RCU_BKPSRAM);
 	pmu_backup_write_enable();
-	gpio_af_set(KEY_BOOTLOADER_TFTP_GPIOx, GPIO_AF_0, KEY_BOOTLOADER_TFTP_GPIO_PINx);
 	gpio_mode_set(KEY_BOOTLOADER_TFTP_GPIOx, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, KEY_BOOTLOADER_TFTP_GPIO_PINx);
+#else
+	rcu_periph_clock_enable(RCU_AF);
+	rcu_periph_clock_enable(KEY_BOOTLOADER_TFTP_RCU_GPIOx);
+	if constexpr (KEY_BOOTLOADER_TFTP_GPIOx == GPIOA) {
+		if constexpr ((KEY_BOOTLOADER_TFTP_GPIO_PINx == GPIO_PIN_13) || (KEY_BOOTLOADER_TFTP_GPIO_PINx == GPIO_PIN_14)) {
+			gpio_pin_remap_config(GPIO_SWJ_DISABLE_REMAP, ENABLE);
+		}
+	}
+	gpio_init(KEY_BOOTLOADER_TFTP_GPIOx, GPIO_MODE_IPU, GPIO_OSPEED_50MHZ, KEY_BOOTLOADER_TFTP_GPIO_PINx);
 #endif
 
 	const auto isNotRemote = (bkp_data_read(BKP_DATA_1) != 0xA5A5);
-	const auto isNotKey =  (gpio_input_bit_get(KEY_BOOTLOADER_TFTP_GPIOx, KEY_BOOTLOADER_TFTP_GPIO_PINx));
+	const auto isNotKey = (gpio_input_bit_get(KEY_BOOTLOADER_TFTP_GPIOx, KEY_BOOTLOADER_TFTP_GPIO_PINx));
 
 	if (isNotRemote && isNotKey) {
-		// https://developer.arm.com/documentation/ka001423/1-0
 		// https://developer.arm.com/documentation/ka001423/1-0
 		//1. Disable interrupt response.
 		__disable_irq();
@@ -104,7 +107,6 @@ int main(void) {
 
 	printf("Remote=%c, Key=%c\n", isNotRemote ? 'N' : 'Y', isNotKey ? 'N' : 'Y');
 	fw.Print("Bootloader TFTP Server");
-	nw.Print();
 
 	hw.SetMode(hardware::ledblink::Mode::OFF_ON);
 
@@ -116,7 +118,6 @@ int main(void) {
 
 	remoteConfig.SetEnableReboot(true);
 
-	network::display_ip();
 	display.Printf(3, "Bootloader TFTP Srvr");
 
 	hw.SetMode(hardware::ledblink::Mode::FAST);

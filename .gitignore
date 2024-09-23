@@ -37,6 +37,7 @@
 *.map
 *.list
 *.bin
+*.elf
 
 # Apple
 .DS_Store

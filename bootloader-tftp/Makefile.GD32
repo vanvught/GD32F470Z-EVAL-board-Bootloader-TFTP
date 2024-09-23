@@ -9,7 +9,7 @@ DEFINES+=NDEBUG
 SRCDIR=
 LIBS=
 
-include Rules.mk
+include Common.mk
 include ../firmware-template-gd32/Rules.mk
 
 prerequisites:

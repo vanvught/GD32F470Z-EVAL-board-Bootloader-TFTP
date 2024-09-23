@@ -2,7 +2,7 @@
  * @file remoteconfig.h
  *
  */
-/* Copyright (C) 2019-2024 by Arjan van Vught mailto:info@orangepi-dmx.nl
+/* Copyright (C) 2019-2024 by Arjan van Vught mailto:info@gd32-dmx.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,7 @@
 
 namespace remoteconfig {
 namespace udp {
-static constexpr auto BUFFER_SIZE = 1024;
+static constexpr auto BUFFER_SIZE = 1420;
 } // namespace udp
 
 enum class Node {
@@ -128,6 +128,7 @@ enum class TxtFile {
 	RGBPANEL,
 	LTCETC,
 	NODE,
+	ENV,
 	LAST
 };
 
@@ -238,7 +239,9 @@ private:
 	void HandleReboot();
 	void HandleFactory();
 	void HandleList();
+#if !defined (CONFIG_REMOTECONFIG_MINIMUM)
 	void HandleUptime();
+#endif
 	void HandleVersion();
 
 	void HandleGetNoParams() {
@@ -246,6 +249,7 @@ private:
 	}
 
 	void HandleGetRconfigTxt(uint32_t& nSize);
+	void HandleGetEnvTxt(uint32_t& nSize);
 	void HandleGetNetworkTxt(uint32_t& nSize);
 
 #if defined (DISPLAY_UDF)
@@ -296,7 +300,7 @@ private:
 #if defined (RDM_RESPONDER)
 	void HandleGetRdmDeviceTxt(uint32_t& nSize);
 	void HandleGetRdmSensorsTxt(uint32_t& nSize);
-# if defined (ENABLE_RDM_SUBDEVICES)
+# if defined (CONFIG_RDM_ENABLE_SUBDEVICES)
 	void HandleGetRdmSubdevTxt(uint32_t& nSize);
 # endif
 #endif
@@ -354,7 +358,8 @@ private:
 	void HandleGetPca9685Txt(uint32_t& nSize);
 #endif
 
-	void HandleSetRconfig();
+	void HandleSetRconfigTxt();
+	void HandleSetEnvTxt();
 	void HandleSetNetworkTxt();
 
 #if defined (DISPLAY_UDF)
@@ -405,7 +410,7 @@ private:
 #if defined (RDM_RESPONDER)
 	void HandleSetRdmDeviceTxt();
 	void HandleSetRdmSensorsTxt();
-# if defined (ENABLE_RDM_SUBDEVICES)
+# if defined (CONFIG_RDM_ENABLE_SUBDEVICES)
 	void HandleSetRdmSubdevTxt();
 # endif
 #endif
@@ -493,7 +498,6 @@ private:
 		void (RemoteConfig::*SetHandler)();
 		const char *pFileName;
 		const uint8_t nFileNameLength;
-		const configstore::Store nStore;
 	};
 
 	static const Txt s_TXT[];

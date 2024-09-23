@@ -34,26 +34,9 @@ SECTIONS
 	*(.glue_7t)
 	*(.eh_frame)
     KEEP (*(.init))
-	KEEP (*(.fini))
+    KEEP (*(.fini))
     . = ALIGN(4);
     _etext = .;
-    
-    . = ALIGN(8);
-     
-    PROVIDE_HIDDEN (__preinit_array_start = .);
-    KEEP (*(.preinit_array*))
-    PROVIDE_HIDDEN (__preinit_array_end = .);
-
-    PROVIDE_HIDDEN (__init_array_start = .);
-    KEEP (*(SORT(.init_array.*)))
-    KEEP (*(.init_array*))
-    PROVIDE_HIDDEN (__init_array_end = .);
-
-    PROVIDE_HIDDEN (__fini_array_start = .);
-    KEEP (*(.fini_array*))
-    KEEP (*(SORT(.fini_array.*)))
-    PROVIDE_HIDDEN (__fini_array_end = .);
-    
   } >FLASH
 
   .rodata :
@@ -63,34 +46,29 @@ SECTIONS
     *(.rodata*)
     . = ALIGN(4);
   } >FLASH
-
-  _sidata = LOADADDR(.data);
-  .data :
-  {
-    . = ALIGN(4);
-    _sdata = .;
-    *(.data)
-    *(.data*)
-    . = ALIGN(4);
-    _edata = .;
-  } >RAM AT> FLASH
   
-  . = ALIGN(4);
-  .bss :
+  .preinit_array :
   {
-    _sbss = .;
-    __bss_start__ = _sbss;
-    *(.bss)
-    *(.bss*)
-    *(COMMON)
-    . = ALIGN(4);
-    _ebss = .;
-    __bss_end__ = _ebss;
-  } >RAM
+    PROVIDE_HIDDEN (__preinit_array_start = .);
+    KEEP (*(.preinit_array*))
+    PROVIDE_HIDDEN (__preinit_array_end = .);
+  } >FLASH
   
- . = ALIGN(8);
-  PROVIDE ( end = _ebss );
-  PROVIDE ( _end = _ebss );
+  .init_array :
+  {
+    PROVIDE_HIDDEN (__init_array_start = .);
+    KEEP (*(SORT(.init_array.*)))
+    KEEP (*(.init_array*))
+    PROVIDE_HIDDEN (__init_array_end = .);
+  } >FLASH
+  
+  .fini_array :
+  {
+    PROVIDE_HIDDEN (__fini_array_start = .);
+    KEEP (*(.fini_array*))
+    KEEP (*(SORT(.fini_array.*)))
+    PROVIDE_HIDDEN (__fini_array_end = .);
+  } >FLASH
 
   .stack :
   {
@@ -122,6 +100,44 @@ SECTIONS
     . = ALIGN(4);
   } >TCMSRAM
 
+  _sidata = LOADADDR(.data);
+  .data :
+  {
+    . = ALIGN(4);
+    _sdata = .;
+    *(.data)
+    *(.data*)
+    . = ALIGN(4);
+    _edata = .;
+  } >RAM AT> FLASH
+
+  . = ALIGN(4);
+  .bss :
+  {
+    _sbss = .;
+    __bss_start__ = _sbss;
+    *(.bss)
+    *(.bss*)
+    *(COMMON)
+    . = ALIGN(4);
+    _ebss = .;
+    __bss_end__ = _ebss;
+  } >RAM
+
+  . = ALIGN(8);
+  PROVIDE ( end = _ebss );
+  PROVIDE ( _end = _ebss );
+
+  .ramadd :
+  {
+    _sramadd = .;
+  	. = ALIGN(4);
+    *(.ramadd)
+    *(.ramadd*)
+    . = ALIGN(4);
+    _eramadd = .;
+  } >RAMADD
+
   .bkpsram :
   {
   	. = ALIGN(4);
@@ -138,4 +154,4 @@ SECTIONS
   }
 }
 
-GROUP(libgcc.a libc.a)
+GROUP(libgcc.a)

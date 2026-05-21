@@ -111,7 +111,7 @@ int main() {
     display.Printf(3, "Bootloader TFTP Srvr");
 
     hal::statusled::SetMode(hal::statusled::Mode::kFast);
-    watchdogInit();
+    watchdog::Init();
 
     while (1) {
         watchdog::Feed();

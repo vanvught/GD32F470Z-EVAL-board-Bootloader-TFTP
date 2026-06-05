@@ -41,4 +41,7 @@
 
 # Apple
 .DS_Store
+._*
+
 /common/scripts/gd32/venv
+

@@ -177,7 +177,6 @@
 					<sourceEntries>
 						<entry excluding="gd32f20x|gd32f4xx|device|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry excluding="emac" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device/emac"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="gd32f4xx/CMSIS/GD/GD32F4xx/Source"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="gd32f4xx/GD32F4xx_standard_peripheral/Source"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
